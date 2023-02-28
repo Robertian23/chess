@@ -66,8 +66,13 @@ class King(Piece):
             if end_square.occupied: 
                 return "capture"
             return True
-        if yes_print:
-            print("invalid move: king can only move one square vertically, horizontally, or diagonally")
+        for rank in board:
+            for square in rank:
+                if type(square) is not int and type(square) is not str and square.piece and isinstance(square.piece, King) and square.piece.color != self.color:
+                    if abs(end_rank - square.rank) <= 1 and abs(ord(end_file) - ord(square.file)) <= 1:
+                        print("invalid move: king cannot move next to other king") if yes_print else None
+                        return False
+        print("invalid move: king can only move one square vertically, horizontally, or diagonally") if yes_print else None
         return False
 
 
