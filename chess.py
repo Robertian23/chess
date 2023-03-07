@@ -1,4 +1,4 @@
-import copy
+import copy, threading
 
 GAME_IN_PLAY = True
 move_notation, move_storage = [], []
@@ -258,37 +258,37 @@ wp8 = Pawn('♙', 'P', 'white')
 board = [[], [], [], [], [], [], [], [], []]
 
 def setup_board(board):
-    # for r in range(9):
-    #     for f in range(8):
-    #         if f == 0 and r != 8:
-    #             board[r].append(8 - r)
-    #         if r >= 2 and r <= 5: # actual rank 6 through 3, middle rows
-    #                 board[r].append(Square(None, f + 1, 8 - r))
-    #         elif len(board[r]) == 1:
-    #             if r == 0: # actual rank 8, black back row
-    #                 board[r].extend([Square(br1, 1, 8), Square(bn1, 2, 8), Square(bb1, 3, 8), Square(bq, 4, 8), Square(bk, 5, 8), Square(bb2, 6, 8), Square(bn2, 7, 8), Square(br2, 8, 8)])
-    #             if r == 1: # actual rank 7, black front row
-    #                 board[r].extend([Square(bp1, 1, 7), Square(bp2, 2, 7), Square(bp3, 3, 7), Square(bp4, 4, 7), Square(bp5, 5, 7), Square(bp6, 6, 7), Square(bp7, 7, 7), Square(bp8, 8, 7)])
-    #             if r == 6: # actual rank 2, white front row
-    #                 board[r].extend([Square(wp1, 1, 2), Square(wp2, 2, 2), Square(wp3, 3, 2), Square(wp4, 4, 2), Square(wp5, 5, 2), Square(wp6, 6, 2), Square(wp7, 7, 2), Square(wp8, 8, 2)])
-    #             if r == 7: # actual rank 3, white back row
-    #                 board[r].extend([Square(wr1, 1, 1), Square(wn1, 2, 1), Square(wb1, 3, 1), Square(wq, 4, 1), Square(wk, 5, 1), Square(wb2, 6, 1), Square(wn2, 7, 1), Square(wr2, 8, 1)])
-    #     if r == 8: 
-    #         board[r].extend(file_labels)
-
     for r in range(9):
         for f in range(8):
             if f == 0 and r != 8:
                 board[r].append(8 - r)
-            if r >= 1 and r <= 6: # actual rank 6 through 3, middle rows
+            if r >= 2 and r <= 5: # actual rank 6 through 3, middle rows
                     board[r].append(Square(None, f + 1, 8 - r))
             elif len(board[r]) == 1:
                 if r == 0: # actual rank 8, black back row
-                    board[r].extend([Square(None, 1, 8), Square(None, 2, 8), Square(None, 3, 8), Square(None, 4, 8), Square(bk, 5, 8), Square(None, 6, 8), Square(None, 7, 8), Square(None, 8, 8)])
+                    board[r].extend([Square(br1, 1, 8), Square(bn1, 2, 8), Square(bb1, 3, 8), Square(bq, 4, 8), Square(bk, 5, 8), Square(bb2, 6, 8), Square(bn2, 7, 8), Square(br2, 8, 8)])
+                if r == 1: # actual rank 7, black front row
+                    board[r].extend([Square(bp1, 1, 7), Square(bp2, 2, 7), Square(bp3, 3, 7), Square(bp4, 4, 7), Square(bp5, 5, 7), Square(bp6, 6, 7), Square(bp7, 7, 7), Square(bp8, 8, 7)])
+                if r == 6: # actual rank 2, white front row
+                    board[r].extend([Square(wp1, 1, 2), Square(wp2, 2, 2), Square(wp3, 3, 2), Square(wp4, 4, 2), Square(wp5, 5, 2), Square(wp6, 6, 2), Square(wp7, 7, 2), Square(wp8, 8, 2)])
                 if r == 7: # actual rank 3, white back row
-                    board[r].extend([Square(None, 1, 1), Square(None, 2, 1), Square(None, 3, 1), Square(wq, 4, 1), Square(wk, 5, 1), Square(None, 6, 1), Square(None, 7, 1), Square(None, 8, 1)])
+                    board[r].extend([Square(wr1, 1, 1), Square(wn1, 2, 1), Square(wb1, 3, 1), Square(wq, 4, 1), Square(wk, 5, 1), Square(wb2, 6, 1), Square(wn2, 7, 1), Square(wr2, 8, 1)])
         if r == 8: 
             board[r].extend(file_labels)
+
+    # for r in range(9):
+    #     for f in range(8):
+    #         if f == 0 and r != 8:
+    #             board[r].append(8 - r)
+    #         if r >= 1 and r <= 6: # actual rank 6 through 3, middle rows
+    #                 board[r].append(Square(None, f + 1, 8 - r))
+    #         elif len(board[r]) == 1:
+    #             if r == 0: # actual rank 8, black back row
+    #                 board[r].extend([Square(None, 1, 8), Square(None, 2, 8), Square(None, 3, 8), Square(None, 4, 8), Square(bk, 5, 8), Square(None, 6, 8), Square(None, 7, 8), Square(None, 8, 8)])
+    #             if r == 7: # actual rank 3, white back row
+    #                 board[r].extend([Square(None, 1, 1), Square(None, 2, 1), Square(None, 3, 1), Square(wq, 4, 1), Square(wk, 5, 1), Square(None, 6, 1), Square(None, 7, 1), Square(None, 8, 1)])
+    #     if r == 8: 
+    #         board[r].extend(file_labels)
     
 
 # DRAW & FLIP BOARD
@@ -372,6 +372,7 @@ def check_check(board, start_rank, start_file, end_rank, end_file, move_color, y
     return False
 
 def check_mates(board, start_rank, start_file, end_rank, end_file, move_color):
+    # intended move is played in the future on a copy of board
     capture = False
     board_copy = copy.deepcopy(board)
     for rank in board_copy:
@@ -390,6 +391,7 @@ def check_mates(board, start_rank, start_file, end_rank, end_file, move_color):
                 else: 
                     square.update_square(piece_to_be_switched)
 
+    # test all possible moves and see if they lead to check
     checkmate_moves, stalemate_moves = 0, 0
     mate = None
     for rank in board_copy:
@@ -404,9 +406,9 @@ def check_mates(board, start_rank, start_file, end_rank, end_file, move_color):
                             if valid: 
                                 verify = piece_to_be_moved.verify_move(square.rank, file_labels[square.file], s.rank, file_labels[s.file], s, board_copy, False)
                             if valid and verify:
-                                mate = check_check(board_copy, square.rank, file_labels[square.file], s.rank, file_labels[s.file], move_color, False)
-                            if valid and verify and mate != "invalid check" and mate != None:
-                                if check_check(board_copy, start_rank, start_file, end_rank, end_file, move_color, False) == "valid check" and isinstance(square.piece, King):
+                                mate = check_check(board_copy, square.rank, file_labels[square.file], s.rank, file_labels[s.file], piece_to_be_moved.color, False)
+                            if valid and verify and mate != "invalid check" or mate != None:
+                                if check_check(board, start_rank, start_file, end_rank, end_file, move_color, False) != "valid check" and isinstance(square.piece, King):
                                     checkmate_moves += 1
                                 else:
                                     stalemate_moves += 1
@@ -423,7 +425,6 @@ def check_mates(board, start_rank, start_file, end_rank, end_file, move_color):
 # RECORD MOVES
 
 def record_move(move_number, squares_pieces, moves, verifications):
-    
     start_square, end_square, piece_to_be_moved, piece_to_be_switched = squares_pieces[0], squares_pieces[1], squares_pieces[2], squares_pieces[3]
     capture_occurred, check_occurred = verifications[0], verifications[1]
     sf, sr, ef, er = moves[0], moves[1], moves[2], moves[3]
@@ -445,6 +446,7 @@ def record_move(move_number, squares_pieces, moves, verifications):
             print(move[0] + move[1] + "\n")
         else:
             print(move[0] + "\n")
+
 
 
 # MOVE PIECE
@@ -522,7 +524,7 @@ def play(board, GAME_IN_PLAY, move_notation, move_storage):
             else:
                 wps, wms, wvs = move_piece(white_move, board, "white")
                 wp, mate_oc = wps[2], wvs[2]
-        if white_move != "undo" and not wp:
+        if white_move != "undo" and wp:
             record_move(move_number, wps, wms, wvs)
         
         board = flip_board(board)
@@ -540,7 +542,7 @@ def play(board, GAME_IN_PLAY, move_notation, move_storage):
             else:
                 bps, bms, bvs = move_piece(black_move, board, "black")
                 bp, mate_oc = bps[2], bvs[2]
-        if black_move != "undo" and not wp:
+        if black_move != "undo" and wp:
             record_move(move_number, bps, bms, bvs)
 
         board = flip_board(board)
