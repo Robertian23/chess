@@ -66,7 +66,6 @@ class King(Piece):
             for square in rank:
                 if type(square) is not int and type(square) is not str and isinstance(square.piece, King) and square.piece.color != self.color:
                     if abs(end_rank - square.rank) <= 1 and abs(ord(end_file) - ord(file_labels[square.file])) <= 1:
-                        print(abs(end_rank - square.rank), abs(ord(end_file) - square.file)) if yes_print else None
                         print("invalid move: king cannot move next to other king") if yes_print else None
                         return False
         if (start_rank == end_rank and abs(ord(start_file) - ord(end_file)) == 1) or (start_file == end_file and abs(start_rank - end_rank) == 1) or (abs(ord(start_file) - ord(end_file)) == 1 and abs(start_rank - end_rank) == 1):
@@ -86,15 +85,15 @@ class Queen(Piece):
         try: 
             if start_rank == end_rank or start_file == end_file or abs(start_rank - end_rank) / abs(ord(start_file) - ord(end_file)) == 1:
                 for rank in board: 
-                    for file in rank:
-                        if type(file) is not int and type(file) is not str and start_file != file_labels[file.file] and file is not end_square and file.occupied:
-                            if ((end_rank > start_rank and end_rank > file.rank and file.rank > start_rank) or (end_rank < start_rank and end_rank < file.rank and file.rank < start_rank)) and ((ord(end_file) > ord(start_file) and ord(end_file) > ord(file_labels[file.file]) and ord(file_labels[file.file]) > ord(start_file)) or (ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[file.file]) and ord(file_labels[file.file]) < ord(start_file))) and abs(start_rank - file.rank) / abs(ord(start_file) - ord(file_labels[file.file])) == 1:
+                    for square in rank:
+                        if type(square) is not int and type(square) is not str and start_file != file_labels[square.file] and square is not end_square and square.occupied:
+                            if ((end_rank > start_rank and end_rank > square.rank and square.rank > start_rank) or (end_rank < start_rank and end_rank < square.rank and square.rank < start_rank)) and ((ord(end_file) > ord(start_file) and ord(end_file) > ord(file_labels[square.file]) and ord(file_labels[square.file]) > ord(start_file)) or (ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[square.file]) and ord(file_labels[square.file]) < ord(start_file))) and abs(start_rank - square.rank) / abs(ord(start_file) - ord(file_labels[square.file])) == 1:
                                 print("invalid move: queen is blocked on the diagonal") if yes_print else None
                                 return False
-                            elif start_file == end_file and file_labels[file.file] == start_file and ((end_rank < start_rank and end_rank < file.rank and file.rank < start_rank) or (start_rank < end_rank and start_rank < file.rank and file.rank < end_rank)):
+                            elif start_file == end_file and file_labels[square.file] == start_file and ((end_rank < start_rank and end_rank < square.rank and square.rank < start_rank) or (start_rank < end_rank and start_rank < square.rank and square.rank < end_rank)):
                                 print("invalid move: queen is blocked on the vertical") if yes_print else None
                                 return False  
-                            elif start_rank == end_rank and file.rank == start_rank and ((ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[file.file]) and ord(file_labels[file.file]) < ord(start_file)) or (ord(start_file) < ord(end_file) and ord(start_file) < ord(file_labels[file.file]) and ord(file_labels[file.file]) < ord(end_file))):
+                            elif start_rank == end_rank and square.rank == start_rank and ((ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[square.file]) and ord(file_labels[square.file]) < ord(start_file)) or (ord(start_file) < ord(end_file) and ord(start_file) < ord(file_labels[square.file]) and ord(file_labels[square.file]) < ord(end_file))):
                                 print("invalid move: queen is blocked on the horizontal") if yes_print else None
                                 return False
                 if end_square.occupied:
@@ -116,12 +115,12 @@ class Rook(Piece):
     def verify_move(self, start_rank, start_file, end_rank, end_file, end_square, board, yes_print):
         if start_rank == end_rank or start_file == end_file:
             for rank in board: 
-                for file in rank:
-                    if type(file) is not int and type(file) is not str and file is not end_square and file.occupied:
-                        if start_file == end_file and ((end_rank < start_rank and end_rank < file.rank and file.rank < start_rank) or (start_rank < end_rank and start_rank < file.rank and file.rank < end_rank)):
+                for square in rank:
+                    if type(square) is not int and type(square) is not str and square is not end_square and square.occupied:
+                        if start_file == end_file and ((end_rank < start_rank and end_rank < square.rank and square.rank < start_rank) or (start_rank < end_rank and start_rank < square.rank and square.rank < end_rank)):
                             print("invalid move: rook is blocked on the vertical") if yes_print else None
                             return False  
-                        elif start_rank == end_rank and ((ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[file.file]) and ord(file_labels[file.file]) < ord(start_file)) or (ord(start_file) < ord(end_file) and ord(start_file) < ord(file_labels[file.file]) and ord(file_labels[file.file]) < ord(end_file))):
+                        elif start_rank == end_rank and ((ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[square.file]) and ord(file_labels[square.file]) < ord(start_file)) or (ord(start_file) < ord(end_file) and ord(start_file) < ord(file_labels[square.file]) and ord(file_labels[square.file]) < ord(end_file))):
                             print("invalid move: rook is blocked on the horizontal") if yes_print else None
                             return False
             if end_square.occupied: 
@@ -140,8 +139,8 @@ class Bishop(Piece):
         try: 
             if abs(start_rank - end_rank) / abs(ord(start_file) - ord(end_file)) == 1:
                 for rank in board: 
-                    for file in rank:
-                        if type(file) is not int and type(file) is not str and start_file != file_labels[file.file] and file is not end_square and file.occupied and ((end_rank > start_rank and end_rank > file.rank and file.rank > start_rank) or (end_rank < start_rank and end_rank < file.rank and file.rank < start_rank)) and ((ord(end_file) > ord(start_file) and ord(end_file) > ord(file_labels[file.file]) and ord(file_labels[file.file]) > ord(start_file)) or (ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[file.file]) and ord(file_labels[file.file]) < ord(start_file))) and abs(start_rank - file.rank) / abs(ord(start_file) - ord(file_labels[file.file])) == 1:
+                    for square in rank:
+                        if type(square) is not int and type(square) is not str and start_file != file_labels[square.file] and square is not end_square and square.occupied and ((end_rank > start_rank and end_rank > square.rank and square.rank > start_rank) or (end_rank < start_rank and end_rank < square.rank and square.rank < start_rank)) and ((ord(end_file) > ord(start_file) and ord(end_file) > ord(file_labels[square.file]) and ord(file_labels[square.file]) > ord(start_file)) or (ord(end_file) < ord(start_file) and ord(end_file) < ord(file_labels[square.file]) and ord(file_labels[square.file]) < ord(start_file))) and abs(start_rank - square.rank) / abs(ord(start_file) - ord(file_labels[square.file])) == 1:
                             print("invalid move: bishop is blocked on diagonal") if yes_print else None
                             return False
                 if end_square.occupied:
@@ -195,18 +194,40 @@ class Pawn(Piece):
         elif abs(start_rank - end_rank) == 2:
             if (self.color == 'white' and start_rank == 2) or (self.color == 'black' and start_rank == 7):
                 for rank in board:
-                    for file in rank:
-                        if type(file) is not int and type(file) is not str:
-                            if self.color == 'white' and file.rank == 3 and start_file == file_labels[file.file] and file.occupied:
+                    for square in rank:
+                        if type(square) is not int and type(square) is not str:
+                            if self.color == 'white' and square.rank == 3 and start_file == file_labels[square.file] and square.occupied:
                                 print("invalid move: pawn is blocked") if yes_print else None
                                 return False
-                            elif self.color == 'black' and file.rank == 6 and start_file == file_labels[file.file] and file.occupied:
+                            elif self.color == 'black' and square.rank == 6 and start_file == file_labels[square.file] and square.occupied:
                                 print("invalid move: pawn is blocked") if yes_print else None
                                 return False
                 return True
             else:
                 print("invalid move: pawn cannot move two squares") if yes_print else None
                 return False
+        elif (self.color == 'white' and end_rank == 8) or (self.color == 'black' and end_rank == 1):
+            promo = input("What do you want to promote to: ")
+            if promo == 'king':
+                if self.color == 'white':
+                    return King('♔', 'K', 'white')
+                elif self.color == 'black':
+                    King('♚', 'K', 'black')
+            elif promo == 'queen':
+                if self.color == 'white':
+                    return Queen('♕', 'Q', 'white')
+                elif self.color == 'black':
+                    return Queen('♛', 'Q', 'black')
+            elif promo == 'rook':
+                if self.color == 'white':
+                    return Rook('♖', 'R', 'white')
+                elif self.color == 'black':
+                    return Rook('♜', 'R', 'black')
+            elif promo == 'knight':
+                if self.color == 'white':
+                    return Knight('♘', 'N', 'white')
+                elif self.color == 'black':
+                    return Knight('♞', 'K', 'black')
         if abs(start_rank - end_rank) == 1 and abs(ord(start_file) - ord(end_file)) == 1 and end_square.occupied:
             return "capture"
         return True
@@ -280,15 +301,19 @@ def setup_board(board):
     #     for f in range(8):
     #         if f == 0 and r != 8:
     #             board[r].append(8 - r)
-    #         if r >= 1 and r <= 6: # actual rank 6 through 3, middle rows
+    #         if r >= 2 and r <= 6: # actual rank 6 through 3, middle rows
     #                 board[r].append(Square(None, f + 1, 8 - r))
     #         elif len(board[r]) == 1:
     #             if r == 0: # actual rank 8, black back row
     #                 board[r].extend([Square(None, 1, 8), Square(None, 2, 8), Square(None, 3, 8), Square(None, 4, 8), Square(bk, 5, 8), Square(None, 6, 8), Square(None, 7, 8), Square(None, 8, 8)])
+    #             if r == 1:
+    #                 board[r].extend([Square(wp1, 1, 7), Square(None, 2, 7), Square(None, 3, 7), Square(None, 4, 7), Square(None, 5, 7), Square(None, 6, 7), Square(None, 7, 7), Square(None, 8, 7)])
     #             if r == 7: # actual rank 3, white back row
     #                 board[r].extend([Square(None, 1, 1), Square(None, 2, 1), Square(None, 3, 1), Square(wq, 4, 1), Square(wk, 5, 1), Square(None, 6, 1), Square(None, 7, 1), Square(None, 8, 1)])
     #     if r == 8: 
     #         board[r].extend(file_labels)
+
+
     
 
 # DRAW & FLIP BOARD
@@ -296,7 +321,7 @@ def setup_board(board):
 def draw_board(board):
     for rank in board:
         for square in rank:
-            if isinstance(square, int) or isinstance(square, str):
+            if not isinstance(square, Square):
                 print(bcolors.BOLD + str(square) + "  "+ bcolors.RESET, end = '')
             elif square.symbol != '⬛' and square.symbol != '⬜':
                 print(square.symbol + "  ", end = '')
@@ -332,25 +357,29 @@ def valid_move(start_square, end_square, piece_to_be_moved, piece_to_be_switched
         return False
     return True
 
-def check_check(board, start_rank, start_file, end_rank, end_file, move_color, yes_print):
+def check_check(board, start_rank, start_file, end_rank, end_file, move_color, yes_print, skip):
     capture = False
     board_copy = copy.deepcopy(board)
-    for rank in board_copy:
-        for square in rank:
-            if type(square) is not int and type(square) is not str and start_rank == square.rank and start_file == file_labels[square.file]:
-                piece_to_be_moved = square.piece
-                for r in board_copy:
-                    for s in r:
-                        if type(s) is not int and type(s) is not str and end_rank == s.rank and end_file == file_labels[s.file]:
-                            if s.occupied:
-                                capture = True
-                            piece_to_be_switched = s.piece
-                            s.update_square(piece_to_be_moved)
-                if capture:
-                    square.update_square(None)
-                else: 
-                    square.update_square(piece_to_be_switched)
 
+    # intended move is played in the future on a copy of board
+    if not skip: 
+        for rank in board_copy:
+            for square in rank:
+                if type(square) is not int and type(square) is not str and start_rank == square.rank and start_file == file_labels[square.file]:
+                    piece_to_be_moved = square.piece
+                    for r in board_copy:
+                        for s in r:
+                            if type(s) is not int and type(s) is not str and end_rank == s.rank and end_file == file_labels[s.file]:
+                                if s.occupied:
+                                    capture = True
+                                piece_to_be_switched = s.piece
+                                s.update_square(piece_to_be_moved)
+                    if capture:
+                        square.update_square(None)
+                    else: 
+                        square.update_square(piece_to_be_switched)
+
+    # test all possible moves and see if they lead to check
     for rank in board_copy:
         for square in rank:
             if type(square) is not int and type(square) is not str and square.piece:
@@ -371,51 +400,59 @@ def check_check(board, start_rank, start_file, end_rank, end_file, move_color, y
                                     return "valid check"
     return False
 
-def check_mates(board, start_rank, start_file, end_rank, end_file, move_color):
+def check_for_mates(board, start_rank, start_file, end_rank, end_file, move_color, skip):
+
     # intended move is played in the future on a copy of board
     capture = False
     board_copy = copy.deepcopy(board)
-    for rank in board_copy:
-        for square in rank:
-            if type(square) is not int and type(square) is not str and start_rank == square.rank and start_file == file_labels[square.file]:
-                piece_to_be_moved = square.piece
-                for r in board_copy:
-                    for s in r:
-                        if type(s) is not int and type(s) is not str and end_rank == s.rank and end_file == file_labels[s.file]:
-                            if s.occupied:
-                                capture = True
-                            piece_to_be_switched = s.piece
-                            s.update_square(piece_to_be_moved)
-                if capture:
-                    square.update_square(None)
-                else: 
-                    square.update_square(piece_to_be_switched)
+    if not skip:
+        for rank in board_copy:
+            for square in rank:
+                if type(square) is not int and type(square) is not str and start_rank == square.rank and start_file == file_labels[square.file]:
+                    piece_to_be_moved = square.piece
+                    for r in board_copy:
+                        for s in r:
+                            if type(s) is not int and type(s) is not str and end_rank == s.rank and end_file == file_labels[s.file]:
+                                if s.occupied:
+                                    capture = True
+                                piece_to_be_switched = s.piece
+                                s.update_square(piece_to_be_moved)
+                    if capture:
+                        square.update_square(None)
+                    else: 
+                        square.update_square(piece_to_be_switched)
 
-    # test all possible moves and see if they lead to check
-    checkmate_moves, stalemate_moves = 0, 0
-    mate = None
+    # test all possible moves and see if they lead to check; if in check and no possible moves -> checkmate; if not in check and no possible moves -> stalemate
+    pos_moves_out_of_cmate, pos_moves_out_of_smate = 0, 0
+    in_check = None
     for rank in board_copy:
         for square in rank:
-            if type(square) is not int and type(square) is not str and square.piece and square.piece.color != move_color:
+            if isinstance(square, Square) and square.piece and square.piece.color != move_color:
                 piece_to_be_moved = square.piece
                 for r in board_copy:
                     for s in r:
-                        if type(s) is not int and type(s) is not str:
+                        if isinstance(s, Square):
                             piece_to_be_switched = s.piece
                             valid = valid_move(square, s, piece_to_be_moved, piece_to_be_switched, piece_to_be_moved.color, False)
                             if valid: 
                                 verify = piece_to_be_moved.verify_move(square.rank, file_labels[square.file], s.rank, file_labels[s.file], s, board_copy, False)
                             if valid and verify:
-                                mate = check_check(board_copy, square.rank, file_labels[square.file], s.rank, file_labels[s.file], piece_to_be_moved.color, False)
-                            if valid and verify and mate != "invalid check" or mate != None:
-                                if check_check(board, start_rank, start_file, end_rank, end_file, move_color, False) != "valid check" and isinstance(square.piece, King):
-                                    checkmate_moves += 1
-                                else:
-                                    stalemate_moves += 1
-    if checkmate_moves == 0:
+                                in_check = check_check(board_copy, square.rank, file_labels[square.file], s.rank, file_labels[s.file], piece_to_be_moved.color, False, False)
+                            if valid and verify and in_check == "invalid check":
+                                pos_moves_out_of_cmate += 1
+
+                                c_c = check_check(board, start_rank, start_file, end_rank, end_file, move_color, False, False) 
+                                is_king = isinstance(square.piece, King)
+                                if c_c != "valid check" and is_king:
+                                    pos_moves_out_of_cmate += 1
+                                    print(pos_moves_out_of_cmate)
+                                elif c_c == "valid check" and is_king:
+                                    pos_moves_out_of_smate += 1
+                                    print(pos_moves_out_of_smate)
+    if pos_moves_out_of_cmate == 0:
         print(move_color + " wins by checkmate")
         return "checkmate"
-    elif stalemate_moves == 0:
+    elif pos_moves_out_of_smate == 0:
         print("draw by stalemate")
         return "stalemate"
     else:
@@ -431,7 +468,6 @@ def record_move(move_number, squares_pieces, moves, verifications):
     move_storage.append(squares_pieces + moves)
     symbol, cap_oc, ch_oc = "", "", ""
     if not isinstance(piece_to_be_moved, Pawn):
-        print("piece: ", piece_to_be_moved)
         symbol = piece_to_be_moved.symbol
     if capture_occurred:
         cap_oc = "x"
@@ -461,7 +497,7 @@ def move_piece(move, board, move_color):
     start_rank, start_file, end_rank, end_file = int(start[1]), start[0], int(end[1]), end[0]
     for rank in board:
         for square in rank:
-            if type(square) is not int and type(square) is not str and start_rank == square.rank and start_file == file_labels[square.file]:
+            if isinstance(square, Square) and start_rank == square.rank and start_file == file_labels[square.file]:
                 piece_to_be_moved = square.piece
                 for r in board:
                     for s in r:
@@ -471,12 +507,17 @@ def move_piece(move, board, move_color):
                             if valid: 
                                 verify = piece_to_be_moved.verify_move(start_rank, start_file, end_rank, end_file, s, board, True)
                             if valid and verify:
-                                check = check_check(board, start_rank, start_file, end_rank, end_file, move_color, True)
-                                mates = check_mates(board, start_rank, start_file, end_rank, end_file, move_color) if check else None
+                                check = check_check(board, start_rank, start_file, end_rank, end_file, move_color, True, False)
+                                mates = check_for_mates(board, start_rank, start_file, end_rank, end_file, move_color, False) if check else None
                             if not valid or not verify or check == "invalid check": 
                                 piece_to_be_moved = None
                             else:
-                                s.update_square(piece_to_be_moved)
+                                if isinstance(piece_to_be_moved, Pawn) and isinstance(verify, Piece):
+                                    s.update_square(verify)
+                                    check = check_check(board, start_rank, start_file, end_rank, end_file, move_color, True, True)
+                                    mates = check_for_mates(board, start_rank, start_file, end_rank, end_file, move_color, True) if check else None
+                                else:
+                                    s.update_square(piece_to_be_moved)
                             squares_pieces = [square, s, piece_to_be_moved, piece_to_be_switched]
                 if valid and verify == "capture":
                     square.update_square(None)
@@ -494,7 +535,10 @@ def undo_move(move_notation, move_storage):
     start_square.update_square(piece_to_be_moved)
     end_square.update_square(piece_to_be_switched)
 
-    move_notation[-1].pop()
+    if len(move_notation[-1]) == 2:
+        move_notation[-1].pop()
+    else:
+        move_notation.pop()
     move_storage.pop()
 
 # GAME PLAY                     
@@ -516,7 +560,6 @@ def play(board, GAME_IN_PLAY, move_notation, move_storage):
             if white_move == "undo":
                 if move_number != 1:
                     undo_move(move_notation, move_storage)
-                    move_number -= 1
                     break
                 else:
                     print("cannot undo on first move")
@@ -538,7 +581,9 @@ def play(board, GAME_IN_PLAY, move_notation, move_storage):
         while not bp and not mate_oc and black_move != "undo": 
             black_move = input("black's move: start square, end square: ")
             if black_move == "undo":
+                move_number -= 1
                 undo_move(move_notation, move_storage)
+                break
             else:
                 bps, bms, bvs = move_piece(black_move, board, "black")
                 bp, mate_oc = bps[2], bvs[2]
